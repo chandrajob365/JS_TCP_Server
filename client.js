@@ -1,19 +1,16 @@
 const net = require('net')
-const clientSocket = net.connect({port: 9000, host: 'localhost'})
+const clientSocket = net.connect({port: 3000, host: 'localhost'})
 
 clientSocket.on('connect', () => {
-  console.log('Client connected')
+  console.log('Client connected @ ', JSON.stringify(clientSocket.address()))
+  clientSocket.write('Hello Server')
 })
 
-/* Sends data on the socket */
-/* Callback parameter will be executed when the data
-  is finally written out - this may not be immediately */
 clientSocket.on('data', (msg) => {
   console.log('In client socket ', msg.toString())
+  clientSocket.destroy()
 })
 
-setTimeout(() => {
-  clientSocket.end(() => {
-    console.log('disconnected from server')
-  })
-}, 10000)
+clientSocket.on('close', () => {
+  console.log('Client connection closed')
+})

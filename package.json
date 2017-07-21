@@ -1,12 +1,17 @@
 {
-  "name": "js_TCP_server",
+  "name": "net_server",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A basic http server using node's net module",
+  "main": "live/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node live/server.js",
+    "test": "node test/client.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "keywords": [
+    "http",
+    "net",
+    "socket-server"
+  ],
+  "author": "Manish Chandra <chandrajob365@gmail.com>",
+  "license": "MIT"
 }

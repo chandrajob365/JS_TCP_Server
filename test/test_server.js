@@ -1,7 +1,8 @@
-const server = require('../live/server')
-const app = server.startServer(3000)
+const Server = require('../lib/server')
+const inst = new Server()
+inst.startServer(3000)
 
-server.addRoute('GET', '/', print)
+inst.addRoute('GET', '/', print)
 
 function print () {
   console.log('**** From Client ***** HELLO WORLD ******')

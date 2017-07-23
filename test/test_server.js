@@ -1,9 +1,8 @@
 const Server = require('../lib/server')
-const inst = new Server()
-inst.startServer(3000)
+const server = new Server()
+server.startServer(3000)
 
-inst.addRoute('GET', '/', print)
-
-function print () {
-  console.log('**** From Client ***** HELLO WORLD ******')
+server.addRoute('GET', '/', print)
+function print (request, response) {
+  server.sendHTML(request, response, 'Consider it as HTML')
 }

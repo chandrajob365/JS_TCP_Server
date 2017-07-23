@@ -2,10 +2,9 @@
   "name": "net_server",
   "version": "1.0.0",
   "description": "A basic http server using node's net module",
-  "main": "lib/server.js",
+  "main": "test/test_server.js",
   "scripts": {
-    "start": "node lib/server.js",
-    "test": "node test/client.js"
+    "start": "node test/test_server.js"
   },
   "keywords": [
     "http",

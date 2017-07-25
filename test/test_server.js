@@ -12,8 +12,8 @@ function displayForm (request, response) {
     <body>
     <h1> Hello </h1>
     <form method='POST' action='/about'>
-      <input type = 'text' placeholder = 'Enter first Name' name = 'FName'/>
-
+      <input type = 'text' placeholder = 'Enter First Name' name = 'FName'/>
+      <input type = 'text' placeholder = 'Enter Last Name' name = 'LName'/>
       <button value = 'SendName'> Get Full Name </button>
     </form>
     </body>
@@ -22,6 +22,6 @@ function displayForm (request, response) {
 
 function showName (request, response) {
   console.log('<test_server.js showName > showName Entry')
-  console.log('<displayForm> @@@@@@@@@@@@@ req param =', request['params']['param1'])
-  Server.sendHtml(request, response, request.body)
+  console.log('<displayForm> request bodyparam =', request.body)
+  Server.sendHtml(request, response, (request.body.FName + ' ' + request.body.LName))
 }

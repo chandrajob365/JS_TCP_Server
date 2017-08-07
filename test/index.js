@@ -1,4 +1,5 @@
 const Server = require('../lib/server')
+const Session = require('../lib/session')
 Server.start()
 
 Server.addRoute('GET', '/', login)
@@ -8,7 +9,7 @@ Server.addRoute('POST', '/success', success)
 Server.addRoute('GET', '/logout', logout)
 
 function login (request, response) {
-  let sessionData = Server.getSession(request)
+  let sessionData = Session.getSession(request)
   if (sessionData) {
     Server.redirect(request, response, '/home')
   } else {
@@ -33,14 +34,14 @@ function login (request, response) {
 
 function loginValidation (request, response) {
   // Do some DB check for entered credentials
-  Server.createSession(request, response, (SESSION, cookie) => {
+  Session.createSession(request, response, (SESSION, cookie) => {
     SESSION[cookie] = {userName: request.body.userName}
   })
   Server.redirect(request, response, '/home')
 }
 
 function home (request, response) {
-  let sessionData = Server.getSession(request)
+  let sessionData = Session.getSession(request)
   if (!sessionData) {
     Server.redirect(request, response, '/')
   } else {
@@ -68,12 +69,12 @@ function home (request, response) {
 }
 
 function logout (request, response) {
-  Server.deleteSession(request)
+  Session.deleteSession(request)
   Server.redirect(request, response, '/')
 }
 
 function success (request, response) {
-  let sessionData = Server.getSession(request)
+  let sessionData = Session.getSession(request)
   if (!sessionData) {
     Server.redirect(request, response, '/')
   } else {

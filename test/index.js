@@ -9,7 +9,6 @@ Server.addRoute('GET', '/logout', logout)
 
 function login (request, response) {
   let sessionData = Server.getSession(request)
-  console.log('<login> sessionData=', sessionData)
   if (sessionData) {
     Server.redirect(request, response, '/home')
   } else {
@@ -34,11 +33,7 @@ function login (request, response) {
 
 function loginValidation (request, response) {
   // Do some DB check for entered credentials
-  console.log('<loginValidation> repsonse = ', response)
-  console.log('<loginValidation> userName = ', request.body.userName)
-  console.log('<loginValidation> Before addSession SESSION = ', Server.getSession(request))
   Server.createSession(request, response, (SESSION, cookie) => {
-    console.log('<loginValidation> SESSION=', SESSION, ' cookie=', cookie)
     SESSION[cookie] = {userName: request.body.userName}
   })
   Server.redirect(request, response, '/home')
@@ -46,7 +41,6 @@ function loginValidation (request, response) {
 
 function home (request, response) {
   let sessionData = Server.getSession(request)
-  console.log('<home> sessionData=', sessionData)
   if (!sessionData) {
     Server.redirect(request, response, '/')
   } else {
@@ -62,6 +56,10 @@ function home (request, response) {
         <input type="file" name="file1" /> </br> </br>
         Choose file2 to upload:
         <input type="file" name="file2" /> </br> </br>
+        Choose file3 to upload:
+        <input type="file" name="file3" /> </br> </br>
+        Choose file4 to upload:
+        <input type="file" name="file4" /> </br> </br>
         <input type="submit" value="SEND" /> </br>
       </form>
       </body>
@@ -70,7 +68,6 @@ function home (request, response) {
 }
 
 function logout (request, response) {
-  console.log('<logout> Entry')
   Server.deleteSession(request)
   Server.redirect(request, response, '/')
 }
@@ -89,7 +86,6 @@ function success (request, response) {
      </body>
      <script>
        function logout() {
-         console.log('Into logout')
          window.location.replace('/logout')
        }
      </script>

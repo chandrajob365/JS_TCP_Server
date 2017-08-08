@@ -7,6 +7,7 @@ Server.addRoute('POST', '/loginValidation', loginValidation)
 Server.addRoute('GET', '/home', home)
 Server.addRoute('POST', '/success', success)
 Server.addRoute('GET', '/logout', logout)
+Server.addAllowedOrigin('http://localhost:7000', ['GET', 'POST'])
 
 function login (request, response) {
   let sessionData = Session.getSession(request)

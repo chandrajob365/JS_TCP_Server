@@ -1,6 +1,12 @@
 const Server = require('../lib/server')
-const Session = require('../lib/session')
+const Session = require('../middleWare/session')
+//const testMiddleWare = require('./middleWare/testMiddleWare')
+const logger = require('../middleWare/logger')
 Server.start()
+
+Server.use(Session.sessionHandler)
+// Server.use(testMiddleWare.test)
+Server.use(logger.logger)
 
 Server.addRoute('GET', '/', login)
 Server.addRoute('POST', '/loginValidation', loginValidation)
@@ -11,7 +17,8 @@ Server.addAllowedOrigin('http://localhost:7000', ['GET', 'POST'])
 
 function login (request, response) {
   let sessionData = Session.getSession(request)
-  if (sessionData) {
+  console.log('<login> sessionData=', sessionData)
+  if (sessionData && Object.keys(sessionData).length !== 0) {
     Server.redirect(request, response, '/home')
   } else {
     Server.sendHtml(request, response, `
@@ -35,15 +42,13 @@ function login (request, response) {
 
 function loginValidation (request, response) {
   // Do some DB check for entered credentials
-  Session.createSession(request, response, (SESSION, cookie) => {
-    SESSION[cookie] = {userName: request.body.userName}
-  })
+  Session.addSession(request, {userName: request.body.userName})
   Server.redirect(request, response, '/home')
 }
 
 function home (request, response) {
   let sessionData = Session.getSession(request)
-  if (!sessionData) {
+  if (Object.keys(sessionData).length === 0) {
     Server.redirect(request, response, '/')
   } else {
     Server.sendHtml(request, response, 'Welcome ' + sessionData.userName + ` <HTML>
@@ -76,7 +81,8 @@ function logout (request, response) {
 
 function success (request, response) {
   let sessionData = Session.getSession(request)
-  if (!sessionData) {
+  console.log('<success> sessionData = ', sessionData)
+  if (Object.keys(sessionData).length === 0) {
     Server.redirect(request, response, '/')
   } else {
     Server.sendHtml(request, response, 'Name = ' + request.body.username + '  Age = ' + request.body.age + ' Name from Session = ' + sessionData.userName + `

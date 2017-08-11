@@ -17,7 +17,7 @@ Server.addAllowedOrigin('http://localhost:7000', ['GET', 'POST'])
 
 function login (request, response) {
   let sessionData = Session.getSession(request)
-  console.log('<login> sessionData=', sessionData)
+  logger.logMsg(1, sessionData)
   if (sessionData && Object.keys(sessionData).length !== 0) {
     Server.redirect(request, response, '/home')
   } else {
@@ -48,6 +48,7 @@ function loginValidation (request, response) {
 
 function home (request, response) {
   let sessionData = Session.getSession(request)
+  logger.logMsg(1, sessionData)
   if (Object.keys(sessionData).length === 0) {
     Server.redirect(request, response, '/')
   } else {

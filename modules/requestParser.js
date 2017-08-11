@@ -47,7 +47,7 @@ const parseRequestHeader = (request, requestHeaders) => {
 const parseRequestBody = (request, bodyChunk) => {
   if ((request.header['Content-Type'] === 'application/x-www-form-urlencoded')) {
     let msgBody = bodyChunk.toString().split(/\s+|&/g)
-    paramParser(request, msgBody, 'body')
+    queryParamParser(request, msgBody, 'body')
   } else {
     request['files'] = {}
     request.header['boundary'] = request.header['Content-Type'].split(';')[1].split('=')[1]
@@ -115,6 +115,14 @@ const multipartWithOutContentType = (request, partChunkString) => {
   request.body = Object.assign(request.body, {[key]: val})
 }
 
+const queryStringParser = (request, queryParams, reqObject) => {
+  paramParser(request, queryParams, reqObject)
+}
+
+const queryParamParser = (request, msgBody, reqObject) => {
+  paramParser(request, msgBody, reqObject)
+}
+
 const paramParser = (request, params, reqObject) => {
   params.forEach(elm => {
     if (elm.length > 0) {
@@ -125,5 +133,6 @@ const paramParser = (request, params, reqObject) => {
 }
 
 module.exports = {
-  parseRawRequest
+  parseRawRequest,
+  queryStringParser
 }

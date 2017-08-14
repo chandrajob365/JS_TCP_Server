@@ -3,11 +3,13 @@ const SESSION = {}
 /* Session Handler Start */
 const sessionHandler = (request, response, next) => {
   let browserCookies = request.header.Cookie
+  console.log('<sessionHandler> request.header = ', request.header)
   if (browserCookies) {
     console.log('<sessionHandler> sessionHasCookie(browserCookies)=', sessionHasCookie(browserCookies))
-    if (sessionHasCookie(browserCookies)) return
+    if (sessionHasCookie(browserCookies)) return next()
     if (!sessionHasCookie(browserCookies)) {
       setSessionCookie(response)
+      return next()
     }
   }
   setSessionCookie(response)

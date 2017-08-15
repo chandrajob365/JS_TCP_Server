@@ -14,62 +14,89 @@ const CONTENT_TYPE = {
   'json': 'application/json',
   'pdf': 'application/pdf'
 }
+const chunks = []
 let contentType = ''
+let folderLookupPath = ''
+
 const handler = (request, response, next) => {
-  console.log('<staticFileHandler,  handler> Entry')
   contentType = getContentType(request.header.URI)
-  console.log('<staticFileHandler,  handler> contentType = ', contentType)
   if (contentType) {
     let fileLoc = path.join(__dirname, '../public', request.header.URI)
-    console.log('<staticFileHandler, handler> Inside if  fileLoc = ', fileLoc)
-    let stream = fs.createReadStream(fileLoc)
-    console.log('<staticFileHandler, handler> stream=', stream)
-    errorEventHandler(stream, response, next)
-    dataEventHandler(stream, response, next)
-    endEventHandler(stream, response, next)
+    handleStream(fileLoc, response, next)
   } else {
-    next()
+    if (typeof (next) === typeof (Function)) next()
   }
+}
+
+const handleStream = (fileLoc, response, next) => {
+  let stream = fs.createReadStream(fileLoc)
+  errorEventHandler(stream, response, next)
+  dataEventHandler(stream, response, next)
+  endEventHandler(stream, response, next)
 }
 
 const errorEventHandler = (stream, response, next) => {
   stream.on('error', error => {
     if (error) {
-      console.log('<staticFileHandler,, errorEventHandler> error =', error)
       response['status'] = 'HTTP/1.1 404 Not Found'
       response['content'] = 'The requested resource is not available'
-      next(error)
+      if (typeof (next) === typeof (Function)) next(error)
     }
   })
 }
 
 const dataEventHandler = (stream, response, next) => {
-  console.log('<staticFileHandler dataEventHandler> Entry')
   stream.on('data', data => {
-    console.log('<staticFileHandler, dataEventHandler> response[\'content\'] = ', response['content'], '  data=', data)
-    stream.pipe(response['content'])
+    chunks.push(data)
   })
 }
 
 const endEventHandler = (stream, response, next) => {
-  stream.on('finish', error => {
-    console.log('##################### <staticFileHandler, endEventHandler> Entry #################')
+  stream.on('end', error => {
     if (!error) {
+      response['content'] = Buffer.concat(chunks)
       response['status'] = 'HTTP/1.1 200 OK'
       response['Content-Type'] = contentType
-      next('EOF')
+      cleanup()
+      if (contentType === 'image/x-icon') {
+        response['Cache-Control'] = 'public, max-age=31536000'
+      }
+      if (typeof (next) === typeof (Function)) next('EOF')
     }
   })
 }
-const getContentType = uri => {
-  let fileExtension = uri.match(/\.[0-9a-z]+$/i)
+
+const getContentType = fileName => {
+  let fileExtension = fileName.match(/\.[0-9a-z]+$/i)
   if (fileExtension) {
     fileExtension = fileExtension[0].split('.')[1]
-    return CONTENT_TYPE[fileExtension]
+    return CONTENT_TYPE[fileExtension.toLowerCase()]
   }
   return null
 }
 
+const setViewLookUp = folderName => {
+  folderLookupPath = folderName
+}
+
+const renderView = (request, response, fileName, next) => {
+  contentType = getContentType(fileName)
+  if (contentType) {
+    let fileLoc = path.join(__dirname, folderLookupPath, fileName)
+    handleStream(fileLoc, response, next)
+  } else {
+    if (typeof (next) === typeof (Function)) next()
+  }
+}
+
+const cleanup = () => {
+  if (chunks.lenght !== 0) {
+    while (chunks.length > 0) chunks.pop()
+  }
+  if (contentType.length !== 0) contentType = ''
+}
 module.exports = {
-  handler
+  handler,
+  setViewLookUp,
+  renderView
 }

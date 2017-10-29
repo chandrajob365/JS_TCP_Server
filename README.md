@@ -1,5 +1,9 @@
 ## Node-net-Server
-A HTTP server in javascript using net module of node.js
+A HTTP Web server in javascript using net and fs module of node.js
+
+## Features
+   - Middlewares for session management and Logging
+   - Multiform parsing
 
 ## Installation and running
    
